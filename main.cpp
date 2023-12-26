@@ -134,8 +134,8 @@ private:
     char enemyCharacter = 'Y';
     int enemyHealth = 1;
     int enemyDamage = 1;
-    int enemy_spawn_speed = 5000;
-    int enemy_movement_speed = 2000;
+    float enemy_spawn_speed = 1;
+    float enemy_movement_speed = 1;
     long long enemy_move_time = getTime();
     long long enemy_spawn_time = getTime();
 
@@ -146,16 +146,16 @@ public:
 
     void Logic(int width, Player &player, int height)
     {
-        if (getTime() - enemy_move_time >= enemy_movement_speed)
+        if (getTime() - enemy_move_time >= (1000 / enemy_movement_speed))
         {
             for (size_t i{0}; i < enemy_pos_y.size(); i++)
                 enemy_pos_y[i] += 1;
             enemy_move_time = getTime();
         }
 
-        if (getTime() - enemy_spawn_time >= enemy_spawn_speed)
+        if (getTime() - enemy_spawn_time >= (1000 / enemy_spawn_speed))
         {
-            int new_enemy_x_pos = rand() % (width - 3) + 1; // - 3 is for ensuring the enemy never spwans at the edges
+            int new_enemy_x_pos = rand() % (width - 5) + 1; 
             int new_enemy_y_pos = 0;
             enemy_pos_x.push_back(new_enemy_x_pos);
             enemy_pos_y.push_back(new_enemy_y_pos);
