@@ -23,6 +23,8 @@ private:
     long long bulletShootClock = getTime();
     long long bulletMoveClock = getTime();
 
+    int width;
+
     struct PlayerPart
     {
         char character = ' ';
@@ -63,8 +65,13 @@ public:
 
     PlayerPart *playerParts[4]{&playerHead, &playerCenter, &playerRight, &playerLeft};
 
-    Player(int xPos, int yPos)
+    Player(int width, int height)
     {
+        int xPos = width / 2;
+        int yPos = height - 1;
+
+        this->width = width;
+
         playerCenter.xPos = xPos;
         playerCenter.yPos = yPos;
 
@@ -80,14 +87,14 @@ public:
 
     void movePlayer(char input)
     {
-        if (input == 'A')
+        if (input == 'A' && playerLeft.xPos > 0)
         {
             playerCenter.xPos--;
             playerHead.xPos--;
             playerRight.xPos--;
             playerLeft.xPos--;
         }
-        else if (input == 'D')
+        else if (input == 'D' && playerRight.xPos < width - 2)
         {
             playerCenter.xPos++;
             playerHead.xPos++;
@@ -318,7 +325,7 @@ int main()
     int height = 15;
     int framerate = 30;
     char borderCharacter = '*';
-    Player player(25, height - 1);
+    Player player(width, height);
     Enemy enemy(width);
 
     char input;
