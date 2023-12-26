@@ -17,7 +17,6 @@ long long getTime();
 class Player
 {
 private:
-    int playerPoints = 0;
     char bulletCharacter = '|';
     float bulletFrequencyPerSecond = 1;
     float bulletSpeedPerSecond = 15;
@@ -56,6 +55,7 @@ private:
 
 public:
     vector<Bullet> bulletArray;
+    int playerPoints = 0;
     int playerHealth = 5;
     int bulletDamage = 1;
 
@@ -126,11 +126,6 @@ public:
             bulletMoveClock = getTime();
         }
     }
-
-    int getPlayerPoints()
-    {
-        return playerPoints;
-    }
 };
 
 class Enemy
@@ -178,6 +173,7 @@ public:
                     player.playerHealth -= enemyDamage;
                     enemy_pos_x.erase(enemy_pos_x.begin() + i);
                     enemy_pos_y.erase(enemy_pos_y.begin() + i);
+                    enemy_health_array.erase(enemy_health_array.begin() + i);
                 }
             }
 
@@ -188,6 +184,7 @@ public:
                 enemy_pos_x.erase(enemy_pos_x.begin() + i);
                 enemy_pos_y.erase(enemy_pos_y.begin() + i);
                 enemy_health_array.erase(enemy_health_array.begin() + i);
+                player.playerPoints++;
             }
 
             for (size_t j{0}; j < player.bulletArray.size(); j++)
@@ -206,8 +203,6 @@ public:
                 enemy_pos_y.erase(enemy_pos_y.begin() + i);
                 enemy_health_array.erase(enemy_health_array.begin() + i);
             }
-
-            // When Bullet touches the enemy
         }
     }
 
@@ -225,8 +220,8 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
 {
     system("CLS");
 
-    string spaces((screen_width / 2) - 5, ' ');
-    cout << spaces << "Points : " << player.getPlayerPoints() << endl;
+    cout << "Points : " << player.playerPoints << endl;
+    cout << "Health : " << player.playerHealth << endl;
 
     for (int i = 0; i < screen_width; i++)
     {
@@ -287,13 +282,11 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
         cout << borderCharacter;
     }
 
-    cout << endl
-         << endl;
-    cout << "Health: " << player.playerHealth << endl;
 
     if (player.playerHealth <= 0)
         running = false;
 }
+
 
 char takeInput()
 {
@@ -324,6 +317,7 @@ char takeInput()
     }
 }
 
+
 long long getTime()
 {
     // Get the current time point
@@ -335,6 +329,7 @@ long long getTime()
 
     return milliseconds;
 }
+
 
 int main()
 {
