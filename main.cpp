@@ -54,6 +54,8 @@ private:
     };
 
 public:
+    vector<Bullet> bulletArray;
+
     PlayerPart playerHead{'^', 0, 0};
     PlayerPart playerCenter{'o', 0, 0};
     PlayerPart playerRight{'^', 0, 0};
@@ -99,18 +101,18 @@ public:
         if ((getTime() - bulletShootClock) > (1000 / bulletFrequencyPerSecond))
         {
             Bullet bullet(bulletCharacter, playerHead.xPos, playerHead.yPos - 1);
-            bullet_array.push_back(bullet);
+            bulletArray.push_back(bullet);
             bulletShootClock = getTime();
         }
 
         if ((getTime() - bulletMoveClock) > (1000 / bulletSpeedPerSecond))
         {
-            for (size_t i{0}; i < bullet_array.size(); i++)
+            for (size_t i{0}; i < bulletArray.size(); i++)
             {
-                bullet_array[i].yPos--;
-                if (bullet_array[i].yPos < -1)
+                bulletArray[i].yPos--;
+                if (bulletArray[i].yPos < -1)
                 {
-                    bullet_array.erase(bullet_array.begin() + i);
+                    bulletArray.erase(bulletArray.begin() + i);
                 }
             }
             bulletMoveClock = getTime();
@@ -189,11 +191,11 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
                 }
             }
 
-            for (size_t bullet_counter{0}; bullet_counter < player.bullet_array.size(); bullet_counter++)
+            for (size_t bulletCounter{0}; bulletCounter < player.bulletArray.size(); bulletCounter++)
             {
-                if (player.bullet_array[bullet_counter].xPos == j && player.bullet_array[bullet_counter].yPos == i)
+                if (player.bulletArray[bulletCounter].xPos == j && player.bulletArray[bulletCounter].yPos == i)
                 {
-                    cout << player.bullet_array[bullet_counter].character;
+                    cout << player.bulletArray[bulletCounter].character;
                     matched = true;
                 }
             }
