@@ -12,7 +12,6 @@ using std::endl;
 using std::string;
 using std::vector;
 
-
 long long getTime();
 
 
@@ -55,8 +54,6 @@ private:
     };
 
 public:
-    vector<Bullet> bullet_array;
-
     PlayerPart playerHead{'^', 0, 0};
     PlayerPart playerCenter{'o', 0, 0};
     PlayerPart playerRight{'^', 0, 0};
@@ -207,7 +204,7 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
                 {
                     if (i == enemy.enemy_pos_y[enemy_spawner] && j == enemy.enemy_pos_x[enemy_spawner])
                     {
-                        cout << "Y";
+                        cout << "Y"; // Replace this with the enemy character variable
                         matched = true;
                     }
                 }
@@ -228,6 +225,7 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
     }
 }
 
+
 char takeInput()
 {
     char key;
@@ -235,6 +233,7 @@ char takeInput()
     {
         return 'N';
     }
+
 
     key = getch();
     switch (key)
@@ -268,6 +267,7 @@ long long getTime()
     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
     return milliseconds;
+
 }
 
 
