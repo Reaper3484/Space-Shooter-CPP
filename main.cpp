@@ -18,8 +18,8 @@ class Player
 {
 private:
     char bulletCharacter = '|';
-    float bulletFrequencyPerSecond = 1;
-    float bulletSpeedPerSecond = 15;
+    float bulletFrequencyPerSecond = 2;
+    float bulletSpeedPerSecond = 20;
     long long bulletShootClock = getTime();
     long long bulletMoveClock = getTime();
 
@@ -192,7 +192,7 @@ public:
 
             for (size_t j{0}; j < player.bulletArray.size(); j++)
             {
-                if (enemy_pos_x[i] == player.bulletArray[j].xPos && enemy_pos_y[i] == player.bulletArray[j].yPos - 1)
+                if (enemy_pos_x[i] == player.bulletArray[j].xPos && enemy_pos_y[i] == player.bulletArray[j].yPos)
                 {
                     enemy_health_array[i] -= player.bulletDamage;
                     player.bulletArray.erase(player.bulletArray.begin() + j);
