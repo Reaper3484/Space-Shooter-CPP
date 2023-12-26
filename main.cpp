@@ -64,7 +64,7 @@ public:
     PlayerPart playerRight{'^', 0, 0};
     PlayerPart playerLeft{'^', 0, 0};
 
-    PlayerPart *playerParts[4]{&playerHead, &playerCenter, &playerRight, &playerLeft};
+    PlayerPart *playerParts[4] {&playerHead, &playerCenter, &playerRight, &playerLeft};
 
     Player(int width, int height)
     {
@@ -131,6 +131,9 @@ public:
 class Enemy
 {
 private:
+    int width;
+    int height;
+
     char enemyCharacter = 'Y';
     int enemyHealth = 1;
     int enemyDamage = 1;
@@ -144,7 +147,7 @@ public:
     vector<int> enemy_pos_y;
     vector<int> enemy_health_array;
 
-    void Logic(int width, Player &player, int height)
+    void Logic(Player &player)
     {
         if (getTime() - enemy_move_time >= (1000 / enemy_movement_speed))
         {
@@ -155,7 +158,7 @@ public:
 
         if (getTime() - enemy_spawn_time >= (1000 / enemy_spawn_speed))
         {
-            int new_enemy_x_pos = rand() % (width - 5) + 1; 
+            int new_enemy_x_pos = rand() % (width - 3) + 1; 
             int new_enemy_y_pos = 0;
             enemy_pos_x.push_back(new_enemy_x_pos);
             enemy_pos_y.push_back(new_enemy_y_pos);
@@ -206,13 +209,21 @@ public:
         }
     }
 
-    Enemy(int width)
+    Enemy(int width, int height)
     {
-        int first_enemy_x_pos = rand() % width;
+        this->width = width;
+        this->height = height;
+
+        int first_enemy_x_pos = rand() % (width - 3) + 1;
         int first_enemy_y_pos = 0;
         enemy_pos_x.push_back(first_enemy_x_pos);
         enemy_pos_y.push_back(first_enemy_y_pos);
         enemy_health_array.push_back(enemyHealth);
+    }
+
+    char getEnemyCharacter()
+    {
+        return enemyCharacter;
     }
 };
 
@@ -262,7 +273,7 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
                 {
                     if (i == enemy.enemy_pos_y[enemy_spawner] && j == enemy.enemy_pos_x[enemy_spawner])
                     {
-                        cout << "Y"; // Replace this with the enemy character variable
+                        cout << enemy.getEnemyCharacter();
                         matched = true;
                     }
                 }
@@ -281,7 +292,6 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
     {
         cout << borderCharacter;
     }
-
 
     if (player.playerHealth <= 0)
         running = false;
@@ -339,7 +349,7 @@ int main()
     int framerate = 30;
     char borderCharacter = '*';
     Player player(width, height);
-    Enemy enemy(width);
+    Enemy enemy(width, height);
 
     char input;
 
@@ -356,7 +366,7 @@ int main()
 
         player.movePlayer(input);
         player.shootBullet();
-        enemy.Logic(width, player, height);
+        enemy.Logic(player);
 
         Sleep(1000 / framerate);
     }
