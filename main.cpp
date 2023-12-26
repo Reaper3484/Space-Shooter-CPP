@@ -14,11 +14,9 @@ using std::vector;
 
 long long getTime();
 
-
 class Player
 {
 private:
-    int playerHealth = 5;
     char bulletCharacter = '|';
     float bulletFrequencyPerSecond = 1;
     float bulletSpeedPerSecond = 15;
@@ -57,6 +55,8 @@ private:
 
 public:
     vector<Bullet> bulletArray;
+    int playerHealth = 5;
+    int bulletDamage = 1;
 
     PlayerPart playerHead{'^', 0, 0};
     PlayerPart playerCenter{'o', 0, 0};
@@ -127,12 +127,12 @@ public:
     }
 };
 
-
 class Enemy
 {
 private:
     char enemyCharacter = 'Y';
     int enemyHealth = 1;
+    int enemyDamage = 1;
     int enemy_spawn_speed = 5000;
     int enemy_movement_speed = 2000;
     long long enemy_move_time = getTime();
@@ -141,8 +141,9 @@ private:
 public:
     vector<int> enemy_pos_x;
     vector<int> enemy_pos_y;
+    vector<int> enemy_health_array;
 
-    void Logic(int width)
+    void Logic(int width, Player &player, int height)
     {
         if (getTime() - enemy_move_time >= enemy_movement_speed)
         {
@@ -153,11 +154,54 @@ public:
 
         if (getTime() - enemy_spawn_time >= enemy_spawn_speed)
         {
-            int new_enemy_x_pos = rand() % (width - 1) + 1;
+            int new_enemy_x_pos = rand() % (width - 3) + 1; // - 3 is for ensuring the enemy never spwans at the edges
             int new_enemy_y_pos = 0;
             enemy_pos_x.push_back(new_enemy_x_pos);
             enemy_pos_y.push_back(new_enemy_y_pos);
+            enemy_health_array.push_back(enemyHealth);
             enemy_spawn_time = getTime();
+        }
+
+        for (size_t i{0}; i < enemy_pos_x.size(); i++)
+        {
+            // When enemy touches the spaceship
+            if (enemy_pos_y[i] == player.playerHead.yPos)
+            {
+                if (enemy_pos_x[i] == player.playerHead.xPos || enemy_pos_x[i] == player.playerHead.xPos + 1 || enemy_pos_x[i] == player.playerHead.xPos - 1)
+                {
+                    player.playerHealth -= enemyDamage;
+                    enemy_pos_x.erase(enemy_pos_x.begin() + i);
+                    enemy_pos_y.erase(enemy_pos_y.begin() + i);
+                }
+            }
+
+            // When bullet hits enemy
+
+            if (enemy_health_array[i] <= 0)
+            {
+                enemy_pos_x.erase(enemy_pos_x.begin() + i);
+                enemy_pos_y.erase(enemy_pos_y.begin() + i);
+                enemy_health_array.erase(enemy_health_array.begin() + i);
+            }
+
+            for (size_t j{0}; j < player.bulletArray.size(); j++)
+            {
+                if (enemy_pos_x[i] == player.bulletArray[j].xPos && enemy_pos_y[i] == player.bulletArray[j].yPos - 1)
+                {
+                    enemy_health_array[i] -= player.bulletDamage;
+                    player.bulletArray.erase(player.bulletArray.begin() + j);
+                }
+            }
+
+            if (enemy_pos_y[i] >= height)
+            {
+                player.playerHealth -= enemyDamage;
+                enemy_pos_x.erase(enemy_pos_x.begin() + i);
+                enemy_pos_y.erase(enemy_pos_y.begin() + i);
+                enemy_health_array.erase(enemy_health_array.begin() + i);
+            }
+
+            // When Bullet touches the enemy
         }
     }
 
@@ -167,11 +211,11 @@ public:
         int first_enemy_y_pos = 0;
         enemy_pos_x.push_back(first_enemy_x_pos);
         enemy_pos_y.push_back(first_enemy_y_pos);
+        enemy_health_array.push_back(enemyHealth);
     }
 };
 
-
-void drawGameWindow(int screen_width, int screen_length, char borderCharacter, Player player, Enemy enemy)
+void drawGameWindow(int screen_width, int screen_length, char borderCharacter, Player player, Enemy enemy, bool &running)
 {
     system("CLS");
     for (int i = 0; i < screen_width; i++)
@@ -232,8 +276,14 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
     {
         cout << borderCharacter;
     }
-}
 
+    cout << endl
+         << endl;
+    cout << "Health: " << player.playerHealth << endl;
+
+    if (player.playerHealth <= 0)
+        running = false;
+}
 
 char takeInput()
 {
@@ -242,7 +292,6 @@ char takeInput()
     {
         return 'N';
     }
-
 
     key = getch();
     switch (key)
@@ -265,7 +314,6 @@ char takeInput()
     }
 }
 
-
 long long getTime()
 {
     // Get the current time point
@@ -276,9 +324,7 @@ long long getTime()
     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 
     return milliseconds;
-
 }
-
 
 int main()
 {
@@ -301,11 +347,11 @@ int main()
         if (input == 'Q')
             running = false;
 
-        drawGameWindow(width, height, borderCharacter, player, enemy);
+        drawGameWindow(width, height, borderCharacter, player, enemy, running);
 
         player.movePlayer(input);
         player.shootBullet();
-        enemy.Logic(width);
+        enemy.Logic(width, player, height);
 
         Sleep(1000 / framerate);
     }
