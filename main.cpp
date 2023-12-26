@@ -18,6 +18,7 @@ long long getTime();
 class Player
 {
 private:
+    int playerPoints = 0;
     int playerHealth = 5;
     char bulletCharacter = '|';
     float bulletFrequencyPerSecond = 1;
@@ -125,6 +126,11 @@ public:
             bulletMoveClock = getTime();
         }
     }
+
+    int getPlayerPoints()
+    {
+        return playerPoints;
+    }
 };
 
 
@@ -174,6 +180,10 @@ public:
 void drawGameWindow(int screen_width, int screen_length, char borderCharacter, Player player, Enemy enemy)
 {
     system("CLS");
+
+    string spaces((screen_width / 2) - 5, ' ');
+    cout << spaces << "Points : " << player.getPlayerPoints() << endl;
+
     for (int i = 0; i < screen_width; i++)
     {
         cout << borderCharacter;
