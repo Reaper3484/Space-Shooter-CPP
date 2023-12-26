@@ -154,7 +154,7 @@ public:
 
         if (getTime() - enemy_spawn_time >= enemy_spawn_speed)
         {
-            int new_enemy_x_pos = rand() % (width - 1) + 1;
+            int new_enemy_x_pos = rand() % (width - 3) + 1; // - 3 is for ensuring the enemy never spwans at the edges
             int new_enemy_y_pos = 0;
             enemy_pos_x.push_back(new_enemy_x_pos);
             enemy_pos_y.push_back(new_enemy_y_pos);
@@ -167,7 +167,7 @@ public:
             // When enemy touches the spaceship
             if (enemy_pos_y[i] == player.playerHead.yPos)
             {
-                if (enemy_pos_x[i] == player.playerHead.xPos || enemy_pos_x[i] == player.playerHead.xPos || enemy_pos_x[i] == player.playerHead.xPos - 1)
+                if (enemy_pos_x[i] == player.playerHead.xPos || enemy_pos_x[i] == player.playerHead.xPos + 1 || enemy_pos_x[i] == player.playerHead.xPos - 1)
                 {
                     player.playerHealth -= enemyDamage;
                     enemy_pos_x.erase(enemy_pos_x.begin() + i);
@@ -189,6 +189,7 @@ public:
                 if (enemy_pos_x[i] == player.bulletArray[j].xPos && enemy_pos_y[i] == player.bulletArray[j].yPos - 1)
                 {
                     enemy_health_array[i] -= player.bulletDamage;
+                    player.bulletArray.erase(player.bulletArray.begin() + j);
                 }
             }
 
@@ -214,7 +215,7 @@ public:
     }
 };
 
-void drawGameWindow(int screen_width, int screen_length, char borderCharacter, Player player, Enemy enemy)
+void drawGameWindow(int screen_width, int screen_length, char borderCharacter, Player player, Enemy enemy, bool &running)
 {
     system("CLS");
     for (int i = 0; i < screen_width; i++)
@@ -275,6 +276,13 @@ void drawGameWindow(int screen_width, int screen_length, char borderCharacter, P
     {
         cout << borderCharacter;
     }
+
+    cout << endl
+         << endl;
+    cout << "Health: " << player.playerHealth << endl;
+
+    if (player.playerHealth <= 0)
+        running = false;
 }
 
 char takeInput()
@@ -339,7 +347,7 @@ int main()
         if (input == 'Q')
             running = false;
 
-        drawGameWindow(width, height, borderCharacter, player, enemy);
+        drawGameWindow(width, height, borderCharacter, player, enemy, running);
 
         player.movePlayer(input);
         player.shootBullet();
